@@ -1,0 +1,43 @@
+# Reglas Globales y Mejores Prácticas para Nexo (SaaS B2B Analítica Predictiva)
+
+## 1. Calidad de Código y Estándares "Impeccable" (Estricto)
+- **Cero "Slop" de IA**: Prohibido el uso de bordes con franjas laterales (`border-left` grueso de color en cards), texto con gradiente sobre fondo de gradiente, glassmorphism como diseño por defecto, plantillas genéricas de métricas gigantes, grillas de cards idénticas repetitivas, "eyebrows" diminutos espaciados en todas las secciones, y numeración decorativa (01/02/03) cuando no hay una secuencia real.
+- **Tipografía "Impeccable"**:
+  - Limitar el ancho de línea de texto a 65–75 caracteres.
+  - Títulos Hero/Display: Límite máximo `clamp() max ≤ 6rem (~96px)`.
+  - Letras en títulos: `letter-spacing` mínimo de `-0.04em`. No comprimir más porque resulta ilegible.
+  - Usar `text-wrap: balance` en h1–h3, y `text-wrap: pretty` en párrafos largos.
+- **Color y Contraste (OKLCH preferido)**:
+  - Verificar contraste estrictamente: Texto base ≥4.5:1, texto grande ≥3:1.
+  - Si se usa texto gris sobre fondo de color, el texto debe ser de la misma familia (tono del fondo más oscuro) o con transparencia de un color fuerte, nunca gris lavado genérico.
+  - Evitar el color crema/arena por defecto (SaaS cliché). Si es cálido, que sea intencional o un off-white con croma 0.
+- **Layout y Espaciado**:
+  - Variar el espaciado para ritmo. Las "cards" o tarjetas anidadas son el último recurso, no el defecto.
+  - `flex-wrap` en vez de Grid cuando sea unidimensional. Para grids responsivos sin breakpoints: `repeat(auto-fit, minmax(280px, 1fr))`.
+  - Índice Z (z-index) semántico (dropdown → sticky → modal-backdrop → modal → toast → tooltip). Sin valores como 999.
+- **Movimiento (Motion)**: Curvas exponenciales (ease-out-quart / quint / expo). Nada de rebotes. Obligatorio soporte `prefers-reduced-motion: reduce`. Las animaciones de aparición no deben gatear contenido (si falla JS o se corta, debe ser visible).
+
+## 2. Arquitectura y Estructura de Proyecto (Serverless 3 Capas)
+- **Capa de Presentación (UI)**: Componentes React funcionales limpios (`src/components`). Uso estricto de Next.js App Router (`src/app`).
+- **Capa de Lógica de Negocio (Servicios/Hooks)**: Separar la lógica compleja, cálculos de ROP y Stock de Seguridad en hooks personalizados (`src/hooks`) o utilidades (`src/utils/math`). No mezclar lógica pesada dentro de los componentes visuales.
+- **Capa de Datos (Data Access)**: Centralizar todas las llamadas a Supabase en una carpeta de servicios o repositorios (`src/services` o `src/actions` para Server Actions).
+
+## 3. Convenciones de Código y Next.js App Router
+- **Server Components vs Client Components**: Usar Server Components (`async function`) por defecto para mejorar rendimiento y SEO. Agregar la directiva `"use client"` **sólo** cuando se necesite interactividad (useState, onClick, hooks de ciclo de vida) o acceso a APIs del navegador (solo necesario en las vistas transaccionales Mobile-First).
+- **Tipado**: Uso estricto de TypeScript. Prohibido el uso de `any`. Definir interfaces para entidades de base de datos (Ej: `Product`, `Tenant`, `Sale`).
+- **Ruteo Estricto por Grupos (Route Groups)**: 
+  - `(auth)`: Login, Recuperación. Layout responsivo centrado.
+  - `(dashboard)`: Rutas Desktop (`/`, `/demanda`, `/reabastecimiento`, `/configuracion`). Layout con Sidebar lateral.
+  - `(pos)`: Rutas Mobile-First (`/pos`, `/pos/inventario`, `/pos/recepcion`). Layout sin Sidebar, optimizado para celulares con Bottom Navigation.
+
+## 4. UI/UX, Estilos y Tailwind CSS
+- **Idioma**: Toda la interfaz de usuario (textos, placeholders, botones) DEBE estar en **español**.
+- **Estilos**: Uso exclusivo de Tailwind CSS (`v4`). Evitar CSS personalizado. Agrupar clases con `clsx` y `tailwind-merge`.
+- **Diseño B2B Desktop (Gerencial)**: Maximizar la densidad de información útil, usar gráficos limpios (Recharts), tablas de datos ordenables y layouts a pantalla completa (Sidebar + Contenido).
+- **Diseño Mobile-First (POS/Inventario)**: Botones grandes (Touch targets mínimos de 44x44px), flujos lineales sin fricción. Manejo con una sola mano. Uso de Bottom Navigation.
+- **Componentes**: Usar Radix UI / shadcn-ui con foco en accesibilidad (uso nativo de `<dialog>`, ARIA). Los dropdowns deben usar portales (`position: fixed`) para no ser cortados por contenedores con `overflow: hidden`.
+
+## 5. Multi-tenant y Base de Datos (Supabase)
+- **Seguridad B2B**: Implementar Row Level Security (RLS) en Supabase obligatoriamente para todas las tablas, filtrando siempre por `tenant_id`.
+- **Estado Global**: Utilizar Zustand para el estado global del cliente (ej. carrito del POS).
+- **Manejo de Errores**: Global y local (usar `error.tsx` en Next.js y notificaciones toast). Evitar código anidado profundo (early returns).
