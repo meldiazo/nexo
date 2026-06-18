@@ -4,6 +4,8 @@ import { Package, Inbox, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
+import { createClient } from "../../utils/supabase/client";
+import { useEffect, useState } from "react";
 
 export default function POSLayout({
   children,
@@ -11,6 +13,25 @@ export default function POSLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [isCajero, setIsCajero] = useState(false);
+  const supabase = createClient();
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user?.email?.startsWith('cajero')) {
+        setIsCajero(true);
+      }
+    });
+  }, [supabase]);
+
+  const handleExit = async () => {
+    if (isCajero) {
+      await supabase.auth.signOut();
+      window.location.href = '/login';
+    } else {
+      window.location.href = '/';
+    }
+  };
 
   // Diseño estricto Mobile-First para punto de venta.
   // Impeccable standards: Sin Sidebar, uso de espacio completo, 
@@ -45,10 +66,13 @@ export default function POSLayout({
           <span className="text-[10px] font-medium tracking-wide">Catálogo</span>
         </Link>
         <button 
+          onClick={handleExit}
           className="flex flex-col items-center justify-center w-full h-full space-y-1 text-zinc-500 hover:text-red-400 transition-colors"
         >
           <LogOut className="size-5" />
-          <span className="text-[10px] font-medium tracking-wide">Salir</span>
+          <span className="text-[10px] font-medium tracking-wide">
+            {isCajero ? 'Cerrar Sesión' : 'Salir'}
+          </span>
         </button>
       </nav>
     </div>

@@ -36,6 +36,9 @@ export async function updateSession(request: NextRequest) {
   const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/recuperar-password')
   const isApiRoute = request.nextUrl.pathname.startsWith('/api')
   const isStaticRoute = request.nextUrl.pathname.startsWith('/_next') || request.nextUrl.pathname.includes('.')
+  
+  // Simulación de RBAC B2B
+  const isCajero = user?.email?.startsWith('cajero') || false
 
   if (isStaticRoute || isApiRoute) return supabaseResponse
 
@@ -47,9 +50,16 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user && isAuthRoute) {
-    // Si hay usuario y está intentando ir a login, enviarlo al home
+    // Si hay usuario y está intentando ir a login, enviarlo al home o POS
     const url = request.nextUrl.clone()
-    url.pathname = '/'
+    url.pathname = isCajero ? '/pos' : '/'
+    return NextResponse.redirect(url)
+  }
+
+  if (user && isCajero && !request.nextUrl.pathname.startsWith('/pos')) {
+    // Bloquear a cajeros si intentan entrar al Dashboard
+    const url = request.nextUrl.clone()
+    url.pathname = '/pos'
     return NextResponse.redirect(url)
   }
 

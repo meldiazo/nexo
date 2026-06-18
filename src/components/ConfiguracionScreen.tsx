@@ -1,12 +1,14 @@
 "use client";
 import { Settings, Plus, Save } from 'lucide-react';
 import { useState } from 'react';
+import { useConfigStore } from '../store/configStore';
 
 export function ConfiguracionScreen() {
-  // Toggle states for eventos
-  const [carnavalEnabled, setCarnavalEnabled] = useState(true);
-  const [expocruzEnabled, setExpocruzEnabled] = useState(true);
-  const [climaEnabled, setClimaEnabled] = useState(false);
+  // Toggle states for eventos (Zustand)
+  const { events, toggleEvent } = useConfigStore();
+  const carnavalEnabled = events.carnaval;
+  const expocruzEnabled = events.fexpocruz;
+  const climaEnabled = events.climaInvierno;
 
   // Parameters
   const [stockSeguridad, setStockSeguridad] = useState('15');
@@ -37,7 +39,7 @@ export function ConfiguracionScreen() {
       {/* Main Content */}
       <div className="flex-1 px-8 py-8 overflow-auto">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Panel Izquierdo - Estacionalidad y Eventos */}
             <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
               <div className="mb-6 flex justify-between items-start">
@@ -47,12 +49,6 @@ export function ConfiguracionScreen() {
                     Configura factores externos que afectan la demanda
                   </p>
                 </div>
-                <a 
-                  href="/configuracion/catalogo"
-                  className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 rounded-lg transition-colors border border-zinc-700 text-sm font-medium"
-                >
-                  Gestionar Catálogo
-                </a>
               </div>
 
               <div className="space-y-4 mb-6">
@@ -67,7 +63,7 @@ export function ConfiguracionScreen() {
                     </p>
                   </div>
                   <button
-                    onClick={() => setCarnavalEnabled(!carnavalEnabled)}
+                    onClick={() => toggleEvent('carnaval')}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                       carnavalEnabled ? 'bg-blue-600' : 'bg-zinc-700'
                     }`}
@@ -91,7 +87,7 @@ export function ConfiguracionScreen() {
                     </p>
                   </div>
                   <button
-                    onClick={() => setExpocruzEnabled(!expocruzEnabled)}
+                    onClick={() => toggleEvent('fexpocruz')}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                       expocruzEnabled ? 'bg-blue-600' : 'bg-zinc-700'
                     }`}
@@ -115,7 +111,7 @@ export function ConfiguracionScreen() {
                     </p>
                   </div>
                   <button
-                    onClick={() => setClimaEnabled(!climaEnabled)}
+                    onClick={() => toggleEvent('climaInvierno')}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                       climaEnabled ? 'bg-blue-600' : 'bg-zinc-700'
                     }`}

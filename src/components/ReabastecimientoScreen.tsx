@@ -1,6 +1,7 @@
 "use client";
 import { Package, Clock, DollarSign, FileText } from 'lucide-react';
 import { useState } from 'react';
+import { useConfigStore } from '../store/configStore';
 
 // Mock data for reabastecimiento
 const mockReabastecimiento = [
@@ -74,6 +75,7 @@ const mockReabastecimiento = [
 
 export function ReabastecimientoScreen() {
   const [generatedOrders, setGeneratedOrders] = useState<number[]>([]);
+  const { events } = useConfigStore();
 
   const handleGenerateOrder = (id: number) => {
     setGeneratedOrders([...generatedOrders, id]);
@@ -128,7 +130,7 @@ export function ReabastecimientoScreen() {
 
       {/* KPI Cards */}
       <div className="px-8 py-6 bg-zinc-950">
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* SKUs Críticos */}
           <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
             <div className="flex items-center justify-between mb-2">
@@ -180,7 +182,7 @@ export function ReabastecimientoScreen() {
             </p>
           </div>
 
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1 overflow-x-auto">
             <table className="w-full">
               <thead className="bg-zinc-800/50 sticky top-0">
                 <tr>
@@ -201,6 +203,9 @@ export function ReabastecimientoScreen() {
                   </th>
                   <th className="px-6 py-4 text-left text-zinc-400" style={{ fontSize: '0.75rem', fontWeight: '500', textTransform: 'uppercase' }}>
                     Proveedor
+                  </th>
+                  <th className="px-6 py-4 text-left text-zinc-400" style={{ fontSize: '0.75rem', fontWeight: '500', textTransform: 'uppercase' }}>
+                    Motivo Sugerencia
                   </th>
                   <th className="px-6 py-4 text-center text-zinc-400" style={{ fontSize: '0.75rem', fontWeight: '500', textTransform: 'uppercase' }}>
                     Cantidad Sugerida
@@ -229,6 +234,7 @@ export function ReabastecimientoScreen() {
                           {getUrgenciaText(item.urgencia)}
                         </span>
                       </td>
+
                       <td className="px-6 py-4">
                         <span className="text-blue-400 font-mono" style={{ fontSize: '0.875rem' }}>
                           {item.sku}
@@ -255,6 +261,13 @@ export function ReabastecimientoScreen() {
                       <td className="px-6 py-4">
                         <span className="text-zinc-300" style={{ fontSize: '0.875rem' }}>
                           {item.proveedor}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-blue-400 font-medium" style={{ fontSize: '0.875rem' }}>
+                          {events.carnaval && item.producto.includes('Camiseta') ? 'Impacto Carnaval' : 
+                           events.fexpocruz && item.producto.includes('Zapatillas') ? 'Proyección Fexpocruz' : 
+                           events.climaInvierno && item.producto.includes('Invierno') ? 'Clima: Ola de Frío' : 'Stock Crítico / ROP'}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-center">

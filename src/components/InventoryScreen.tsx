@@ -6,93 +6,154 @@ import { useState } from 'react';
 const mockInventory = [
   {
     id: 1,
-    sku: 'CAM-001-AZ-M',
+    sku: 'CAM-001',
     nombre: 'Camiseta Deportiva',
     atributos: 'M / Azul',
     leadTime: '15 días',
     stockActual: 12,
-    categoria: 'Camisetas',
+    categoria: 'Ropa',
     talla: 'M',
-    color: 'Azul'
+    color: 'Azul',
+    cost: 45,
+    price: 120,
+    rop: 15
   },
   {
     id: 2,
-    sku: 'PAN-002-NE-L',
+    sku: 'PAN-002',
     nombre: 'Pantalón Casual',
     atributos: 'L / Negro',
     leadTime: '20 días',
     stockActual: 8,
-    categoria: 'Pantalones',
+    categoria: 'Ropa',
     talla: 'L',
-    color: 'Negro'
+    color: 'Negro',
+    cost: 80,
+    price: 250,
+    rop: 20
   },
   {
     id: 3,
-    sku: 'ZAP-003-GR-42',
+    sku: 'ZAP-003',
     nombre: 'Zapatillas Running',
     atributos: '42 / Gris',
     leadTime: '30 días',
     stockActual: 25,
     categoria: 'Calzado',
     talla: '42',
-    color: 'Gris'
+    color: 'Gris',
+    cost: 150,
+    price: 450,
+    rop: 18
   },
   {
     id: 4,
-    sku: 'CHA-004-VE-XL',
+    sku: 'CHA-004',
     nombre: 'Chaqueta Invierno',
     atributos: 'XL / Verde',
     leadTime: '25 días',
     stockActual: 5,
-    categoria: 'Chaquetas',
+    categoria: 'Ropa',
     talla: 'XL',
-    color: 'Verde'
+    color: 'Verde',
+    cost: 120,
+    price: 380,
+    rop: 12
   },
   {
     id: 5,
-    sku: 'SHO-005-RO-S',
-    nombre: 'Shorts Deportivos',
-    atributos: 'S / Rojo',
+    sku: 'SHO-005',
+    nombre: 'Short de Mezclilla',
+    atributos: 'S / Azul',
     leadTime: '12 días',
     stockActual: 30,
-    categoria: 'Shorts',
+    categoria: 'Ropa',
     talla: 'S',
-    color: 'Rojo'
+    color: 'Azul',
+    cost: 80,
+    price: 180,
+    rop: 20
   },
   {
     id: 6,
-    sku: 'GOR-006-AZ-UN',
-    nombre: 'Gorra Casual',
-    atributos: 'Única / Azul',
+    sku: 'TOP-006',
+    nombre: 'Top Blanco Básico',
+    atributos: 'S / Blanco',
     leadTime: '10 días',
-    stockActual: 15,
-    categoria: 'Accesorios',
-    talla: 'Única',
-    color: 'Azul'
+    stockActual: 45,
+    categoria: 'Ropa',
+    talla: 'S',
+    color: 'Blanco',
+    cost: 40,
+    price: 90,
+    rop: 30
   },
   {
     id: 7,
-    sku: 'CAM-007-BL-L',
-    nombre: 'Camiseta Básica',
-    atributos: 'L / Blanco',
+    sku: 'GAF-007',
+    nombre: 'Gafas de Sol Premium',
+    atributos: 'Única / Carey',
     leadTime: '15 días',
-    stockActual: 45,
-    categoria: 'Camisetas',
-    talla: 'L',
-    color: 'Blanco'
+    stockActual: 15,
+    categoria: 'Accesorios',
+    talla: 'Única',
+    color: 'Carey',
+    cost: 150,
+    price: 320,
+    rop: 25
   },
   {
     id: 8,
-    sku: 'PAN-008-AZ-M',
-    nombre: 'Pantalón Deportivo',
-    atributos: 'M / Azul',
+    sku: 'FAL-008',
+    nombre: 'Falda de Verano',
+    atributos: 'M / Flores',
     leadTime: '18 días',
-    stockActual: 22,
-    categoria: 'Pantalones',
+    stockActual: 20,
+    categoria: 'Ropa',
     talla: 'M',
-    color: 'Azul'
+    color: 'Flores',
+    cost: 90,
+    price: 210,
+    rop: 15
+  },
+  {
+    id: 9,
+    sku: 'SUE-009',
+    nombre: 'Suéter de Lana',
+    atributos: 'L / Gris',
+    leadTime: '15 días',
+    stockActual: 10,
+    categoria: 'Ropa',
+    talla: 'L',
+    color: 'Gris',
+    cost: 190,
+    price: 410,
+    rop: 10
+  },
+  {
+    id: 10,
+    sku: 'GOR-010',
+    nombre: 'Gorra Urbana',
+    atributos: 'Única / Negro',
+    leadTime: '10 días',
+    stockActual: 40,
+    categoria: 'Accesorios',
+    talla: 'Única',
+    color: 'Negro',
+    cost: 60,
+    price: 150,
+    rop: 15
   }
 ];
+
+export const catalog = mockInventory.map(item => ({
+  id: item.id.toString(),
+  sku: item.sku,
+  name: item.nombre,
+  price: item.price,
+  stock: item.stockActual,
+  category: item.categoria
+}));
 
 export function InventoryScreen() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -157,10 +218,10 @@ export function InventoryScreen() {
         </div>
 
         {/* Filter Buttons */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 overflow-x-auto pb-2 scrollbar-hide flex-nowrap" style={{ WebkitOverflowScrolling: 'touch' }}>
           {/* Talla Filter */}
-          <div className="flex items-center gap-2">
-            <span className="text-zinc-400" style={{ fontSize: '0.875rem' }}>Talla:</span>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-zinc-400 shrink-0" style={{ fontSize: '0.875rem' }}>Talla:</span>
             <div className="flex gap-2">
               <button
                 onClick={() => setSelectedTalla(null)}
@@ -191,8 +252,8 @@ export function InventoryScreen() {
           </div>
 
           {/* Color Filter */}
-          <div className="flex items-center gap-2">
-            <span className="text-zinc-400" style={{ fontSize: '0.875rem' }}>Color:</span>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-zinc-400 shrink-0" style={{ fontSize: '0.875rem' }}>Color:</span>
             <div className="flex gap-2">
               <button
                 onClick={() => setSelectedColor(null)}
@@ -223,9 +284,9 @@ export function InventoryScreen() {
           </div>
 
           {/* Categoría Filter */}
-          <div className="flex items-center gap-2">
-            <span className="text-zinc-400" style={{ fontSize: '0.875rem' }}>Categoría:</span>
-            <div className="flex gap-2">
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-zinc-400 shrink-0" style={{ fontSize: '0.875rem' }}>Categoría:</span>
+            <div className="flex gap-2 pr-4">
               <button
                 onClick={() => setSelectedCategoria(null)}
                 className={`px-3 py-1.5 rounded-lg transition-colors ${

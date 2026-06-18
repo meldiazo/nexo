@@ -1,5 +1,5 @@
-import { CatalogoScreen } from "../../../../components/CatalogoScreen";
+import { InventoryScreen } from "../../../../components/InventoryScreen";
 
 export default function CatalogoPage() {
-  return <CatalogoScreen />;
+  return <InventoryScreen />;
 }
